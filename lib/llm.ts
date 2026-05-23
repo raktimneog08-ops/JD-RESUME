@@ -54,8 +54,11 @@ export async function callLLM<T>(prompt: string, schema: z.ZodSchema<T>, options
   }
 
   if (process.env.GROQ_API_KEY === "dummy-key-for-instantiation" || process.env.MOCK_LLM === "true") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockResult: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isObject = schema && typeof schema === "object" && "shape" in (schema as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const shape = isObject ? (schema as any).shape : {};
 
     if ("overallScore" in shape) {
