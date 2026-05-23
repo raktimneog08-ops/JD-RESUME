@@ -53,6 +53,90 @@ export async function callLLM<T>(prompt: string, schema: z.ZodSchema<T>, options
     throw new LLMError("Groq API key not configured. Set GROQ_API_KEY in .env.local.", "config");
   }
 
+  if (process.env.GROQ_API_KEY === "dummy-key-for-instantiation" || process.env.MOCK_LLM === "true") {
+    let mockResult: any;
+    const isObject = schema && typeof schema === "object" && "shape" in (schema as any);
+    const shape = isObject ? (schema as any).shape : {};
+
+    if ("overallScore" in shape) {
+      mockResult = {
+        overallScore: 70,
+        skillCoverageScore: 80,
+        responsibilityAlignmentScore: 70,
+        keywordScore: 65,
+        seniorityScore: 85,
+        criticalMissingRequirements: [],
+        explanation: "Good alignment."
+      };
+    } else if ("jobTitle" in shape) {
+      mockResult = {
+        jobTitle: "Senior React Developer",
+        company: "Alpha Corp",
+        requiredSkills: ["React", "TypeScript", "Redux"],
+        preferredSkills: ["Node.js", "AWS"],
+        responsibilities: ["Design scalable frontend UI structures", "Mentor junior developers"],
+        qualifications: ["5+ years experience"],
+        tools: [],
+        keywords: ["React", "TypeScript", "Redux"],
+        seniorityLevel: "senior",
+        domainSignals: [],
+        softSkills: []
+      };
+    } else if ("contact" in shape) {
+      mockResult = {
+        contact: { name: "Jane Smith", email: "jane.smith@email.com", phone: "(555) 987-6543" },
+        summary: "Experienced React developer with a focus on UI design and frontend performance.",
+        skills: ["React", "Redux", "HTML", "CSS", "JavaScript"],
+        experience: [
+          {
+            company: "Tech Innovators",
+            title: "Frontend Developer",
+            startDate: "Jan 2021",
+            endDate: "Present",
+            bullets: ["Developed user interfaces using React and state management."]
+          }
+        ],
+        projects: [],
+        education: [
+          {
+            institution: "Example University",
+            degree: "Bachelor of Science",
+            field: "Computer Science",
+            startDate: "2017",
+            endDate: "2021"
+          }
+        ],
+        certifications: []
+      };
+    } else if ("changeReason" in shape) {
+      mockResult = {
+        original: "Developed web applications using React and Node.js",
+        tailored: "Designed and developed scalable web applications using React and Node.js",
+        changeReason: "Aligned with React and Node.js requirements.",
+        keywordsAddressed: ["React", "Node.js"],
+        confidence: "medium",
+        riskFlag: ""
+      };
+    } else if ("gaps" in shape) {
+      mockResult = {
+        gaps: [
+          {
+            name: "AWS",
+            importance: "high",
+            jdEvidence: "AWS required",
+            resumeEvidence: "",
+            suggestedAction: "Learn AWS basics",
+            canSafelyAdd: true
+          }
+        ]
+      };
+    } else {
+      mockResult = {};
+    }
+
+    return schema.parse(mockResult) as T;
+  }
+
   let lastError: string | null = null;
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
