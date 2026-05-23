@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "tsx lib/integration-test.ts",
-    "test:unit": "tsx --env-file=.env.local --test tests/lib/resume-parser.test.ts tests/lib/jd-parser.test.ts tests/lib/scoring.test.ts tests/lib/unsourced-claim-detector.test.ts tests/lib/orchestrator-validation.test.ts"
+    "test:unit": "tsx --test tests/lib/resume-parser.test.ts tests/lib/jd-parser.test.ts tests/lib/scoring.test.ts tests/lib/unsourced-claim-detector.test.ts tests/lib/orchestrator-validation.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
